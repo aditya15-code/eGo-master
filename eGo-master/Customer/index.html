@@ -1,0 +1,238 @@
+<!doctype html>
+<html lang="en">
+  <head>
+  	<title>eGO - SmartCharger</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <link href="https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700,800,900" rel="stylesheet">
+		
+		<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+		<link rel="stylesheet" href="css/style.css">
+		<script  type='text/javascript'  src='http://www.bing.com/api/maps/mapcontrol'></script> 
+    <script type='text/javascript'>
+
+        var infobox, map;
+        var lat = 22.719568; var long = 75.857727;
+        var strPinNum = "";
+        var arrPoints = new Array();
+        var strPushPinImage = "hello.png";
+        //Define an HTML template for a custom infobox.
+        var infoboxTemplate = '<div class="customInfobox" style="width:250px;background: white;border: 1px solid #cecece;align:center;font-family:Arial; font-size:x-small;">{description}</div>';
+
+       function GetMap() {
+           map = new Microsoft.Maps.Map('#myMap', {
+              credentials: 'Apt7ZVYl2gHSCVnoAlO5xxVidjh3r5a6esCbtB4SXurz7naI8wcB5rj8sL7vYhlx',
+              center: new Microsoft.Maps.Location(22.719568, 75.857727),
+              mapTypeId: Microsoft.Maps.MapTypeId.road,
+              zoom: 12
+           });
+
+           for (var i = 0; i < 15; i++) {
+               if (i == 0) {
+                   lat = 22.719568; long = 75.857727;
+                   // strPushPinImage = "images/MIMMapMarkerGreen.png";
+               }
+               if (i == 1) {
+                   lat = 22.719568 + 0.002; long = 75.857727;
+                   // strPushPinImage = "images/MIMMapMarkerYellow.png";
+               }
+               if (i == 2) {
+                   lat = 22.719568+10; long = 77.857727;
+                   // strPushPinImage = "images/MIMMapMarkerBlue.png";
+               }
+               if (i == 3) {
+                   lat = 24.719568+10; long = 77.857727;
+               }
+               if (i == 4) {
+                   lat = 20.719568+10; long = 73.857727;
+               }
+               if (i == 5) {
+                   lat = 20.819568; long = 73.857727;
+               }
+               if (i == 6) {
+                   lat = 20.919568; long = 73.857727+1;
+               }
+               if (i == 7) {
+                   lat = 21.019568+5; long = 73.857727+1.3;
+               }
+               if (i == 8) {
+                   lat = 21.219568; long = 73.857727-0.3;
+               }
+               if (i == 9) {
+                   lat = 21.419568; long = 73.857727+0.2;
+               }
+               if (i == 10) {
+                   lat = 21.619568; long = 73.857727+0.8;
+               }
+               if (i == 11) {
+                   lat = 21.819568; long = 73.857727-0.5;
+               }
+               if (i == 12) {
+                   lat = 22.019568; long = 73.857727+0.5;
+               }
+               if (i == 13) {
+                   lat = 22.219568; long = 73.857727-0.3;
+               }
+               if (i == 14) {
+                   lat = 22.419568; long = 73.857727+0.6;
+               }
+
+               var ll = new Microsoft.Maps.Location(lat, long);
+
+               arrPoints[i] = ll;
+
+               var center = map.getCenter();
+
+               strPinNum = "";
+
+               //Add description for the infobox.               
+               var description = GetMapBubbleInfoByProp(i+1);
+
+               //Pass the title and description into the template and pass it into the infobox as an option.
+               infobox = new Microsoft.Maps.Infobox(center, {
+                   htmlContent: infoboxTemplate.replace('{description}', description),
+                   visible: false
+               });
+
+               //Assign the infobox to a map instance.
+               infobox.setMap(map);
+
+               //Create custom Pushpin
+               var pin = new Microsoft.Maps.Pushpin(ll, {
+                   icon: strPushPinImage,
+                   text: strPinNum,
+                   subTitle:1,
+                   textOffset: new Microsoft.Maps.Point(0, 1),
+               });
+
+               //Store some metadata with the pushpin.
+               pin.metadata = {
+                   title: 'Pin Title',
+                   description: 'Pin discription'
+               };
+
+               //Add a click event handler to the pushpin.
+               Microsoft.Maps.Events.addHandler(pin, 'mouseover', displayInfobox);
+               Microsoft.Maps.Events.addHandler(pin, 'mouseout', closeInfoBox);
+               //Add the pushpin to the map
+               map.entities.push(pin);
+           }
+       }
+
+       function closeInfoBox() {
+           //Close the infobox           
+           infobox.setOptions({
+               visible: false
+           });           
+       }
+
+       function displayInfobox(e) {
+           //Make sure the infobox has metadata to display.
+           if (e.target.metadata) {
+               //Set the infobox options with the metadata of the pushpin.
+               infobox.setOptions({
+                   location: e.target.getLocation(),
+                   title: e.target.metadata.title,
+                   description: e.target.metadata.description,
+                   visible: true
+               });
+           }
+       }
+
+       function GetMapBubbleInfoByProp(i) {
+
+           var strMapBubble = "";
+           var strSpLp = "";
+           var strLeaseSale = "";
+           var strbgColor = "#4094e6";
+           var strStatusDesc = "";
+           var strPushPinText = "Pushpin ";
+           var strForeColor = "black";
+
+           strStatusDesc = "ACTV";
+           strbgColor = "#fcfe41";
+           strForeColor = "black";
+           strStatusDesc = "PENDING";
+           strLeaseSale = "";
+           strSpLp += "";
+
+           strStatusDesc = "Charging Station";
+           strPushPinText = "";
+
+           var strTitleBarAddress = strStatusDesc + "<BR>25751 Abbey Dr<BR>" + strSpLp;
+
+           var strDetailParams = "<a style='cursor:hand' id='lnkPhoto' onclick= 'test()' class='thickbox'>";
+
+           strMapBubble = "<TABLE cellspacing='0' cellpadding='1' >" +
+               "<tr bgcolor='" + strbgColor + "'><td style='color:" + strForeColor + ";font-weight:bold;' colspan='2' valign=top>" + strPushPinText + "#" + (i) + "<span style='padding-left:180px'><a href=# onclick='closeInfoBox()'>Close</a></span><br>" + strTitleBarAddress + "</td></tr><TR><TD  VALIGN='TOP' ALIGN='LEFT'><img style='width:18px;height:29px;padding:3px;' src='" +
+                "images/MIMMapMarkerGreen.png" +
+               "'></TD><TD valign='top' ALIGN='LEFT' nowrap>" +
+               "<BR>MLS ID: 25478954" +
+               "<BR>Style: OVER" +
+               "<BR>Bedrooms:4 " +
+               "<br>Baths/Lavs: 2" +
+               "<br>Sq. Feet: 7000 " +
+               "</TD></TR>" +
+               "<TR id='trRemarks'><TD COLSPAN='2' wrap><br>" +
+               "test for the bing map 7.0 API. we are goin to be migrating to google maps pretty soon " +
+               "test for the bing map 7.0 API. we are goin to be migrating to google maps pretty soon " +
+               "test for the bing map 7.0 API. we are goin to be migrating to google maps pretty soon " +               
+               "...</TD>" +
+               "</tr>";
+
+           strMapBubble += "<tr><td><br>" + strDetailParams + "<a href='http://www.moveinmichigan.com' target='_blank'>Detail View</a></td></tr>" +
+               "</TABLE>";
+                   
+           return strMapBubble;
+
+       }            
+
+    </script>
+  </head>
+
+  <body onload ="GetMap()">
+		<div class="wrapper d-flex align-items-stretch">
+			<nav id="sidebar">
+				<div class="custom-menu">
+					<button type="button" id="sidebarCollapse" class="btn btn-primary">
+	          <i class="fa fa-bars"></i>
+	          <span class="sr-only">Toggle Menu</span>
+	        </button>
+        </div>
+				<div class="p-4">
+                  <h1><a href="index.html" class="logo"><img src="eGO.png" style="width:178.6px;height:50px;z-index: 10;"></a></h1>
+	        <ul class="list-unstyled components mb-5">
+	          <li class="active">
+	            <a href="index.html"  ><span class="fa fa-home mr-3"></span> Home</a>
+	          </li>
+	          <li>
+              <a href="transaction.html"><span class="fa fa-suitcase mr-3"></span>Transaction</a>
+	          </li>
+	          <li>
+              <a href="calci.html"><span class="fa fa-sticky-note mr-3"></span>Bill Calculator</a>
+	          </li>
+	          <li>
+              <a href="reset pwd.html"><span class="fa fa-cogs mr-3"></span>Reset Password</a>
+	          </li>
+	          <li>
+              <a href="contactus.html"><span class="fa fa-paper-plane mr-3"></span> Contact Us</a>
+	          </li>
+              <li>
+                <a href="#"><span class="fa fa-user mr-3"></span>Logout</a>
+              </li>
+	        </ul>
+	      </div>
+    	</nav>
+
+
+      <div id="content" class="p-4 p-md-5 pt-5">
+        <div id="myMap"></div>
+      </div>
+
+    <script src="js/jquery.min.js"></script>
+    <script src="js/popper.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/main.js"></script>
+  </body>
+</html>
